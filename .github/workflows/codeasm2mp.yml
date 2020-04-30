@@ -1,0 +1,102 @@
+##1. makeVector creates a special "vector", which is really a list containing 
+##a function to set the value of the vector, get the value of the vector
+##set the value of the mean, get the value of the mean
+makeVector <- function(x = numeric()) {
+        m <- NULL
+        set <- function(y) {
+                x <<- y
+                m <<- NULL
+        }
+        get <- function() x
+        setmean <- function(mean) m <<- mean
+        getmean <- function() m
+        list(set = set, get = get,
+             setmean = setmean,
+             getmean = getmean)
+}
+##2.Function to calculates the mean of the data and sets the value of the mean in 
+##the cache via the setmean function.
+
+cachemean <- function(x, ...) {
+        m <- x$getmean()
+        if(!is.null(m)) {
+                message("getting cached data")
+                return(m)
+        }
+        data <- x$get()
+        m <- mean(data, ...)
+        x$setmean(m)
+        m
+}
+##3.Computing the inverse of a square matrix can be done with 
+##the solve function in R
+cacheSolve <- function(x, ...) {
+        ## Return a matrix that is the inverse of 'x'
+        inv <- x$getInverse()
+        if (!is.null(inv)) {
+                message("getting cached data")
+                return(inv)
+        }
+        mat <- x$get()
+        inv <- solve(mat, ...)
+        x$setInverse(inv)
+        inv
+}
+
+cc <- complete("specdata", c(6, 10, 20, 34, 100, 200, 310))
+print(cc$nobs)
+makeVector <- function(x = numeric()) {
+        m <- NULL
+        set <- function(y) {
+                x <<- y
+                m <<- NULL
+        }
+        get <- function() x
+        setmean <- function(mean) m <<- mean
+        getmean <- function() m
+        list(set = set, get = get,
+             setmean = setmean,
+             getmean = getmean)
+} 
+## result
+> my_matrix <- makeCacheMatrix(matrix(1:4, 2, 2))
+>
+   > my_matrix$get()
+     [,1] [,2]
+[1,]    1    3
+[2,]    2    4
+> my_matrix$getInverse()
+NULL
+> cacheSolve(my_matrix)
+     [,1] [,2]
+[1,]   -2  1.5
+[2,]    1 -0.5
+> cacheSolve(my_matrix)
+getting cached data
+     [,1] [,2]
+[1,]   -2  1.5
+[2,]    1 -0.5
+> my_matrix$getInverse()
+     [,1] [,2]
+[1,]   -2  1.5
+[2,]    1 -0.5
+> my_matrix$set(matrix(c(2, 2, 1, 4), 2, 2))
+> my_matrix$get()
+     [,1] [,2]
+[1,]    2    1
+[2,]    2    4
+> my_matrix$getInverse()
+NULL
+> cacheSolve(my_matrix)
+           [,1]       [,2]
+[1,]  0.6666667 -0.1666667
+[2,] -0.3333333  0.3333333
+> cacheSolve(my_matrix)
+getting cached data
+           [,1]       [,2]
+[1,]  0.6666667 -0.1666667
+[2,] -0.3333333  0.3333333
+> my_matrix$getInverse()
+           [,1]       [,2]
+[1,]  0.6666667 -0.1666667
+[2,] -0.3333333  0.3333333
